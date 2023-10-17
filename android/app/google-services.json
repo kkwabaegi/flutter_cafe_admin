@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "340715548910",
+    "project_id": "flutter-kkwabaegi-0",
+    "storage_bucket": "flutter-kkwabaegi-0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340715548910:android:75cd92c1eb6ddc4fc743ff",
+        "android_client_info": {
+          "package_name": "com.example.flutter_cafe_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxgu3bh9mw4jEHS-HfmtHa0vMWwqxiQco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
