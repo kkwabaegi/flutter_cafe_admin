@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -21,7 +22,11 @@ class _CafeItemState extends State<CafeItem> {
   //동기, 비동기 - 동기는 싱크로 / 비동기는 따로따로
   Future<void> getCategory() async {
     //비동기로 받아오기
-    var datas = myCafe.get(collectionPath: categoryCollectionName);
+    var datas = myCafe.get(
+        collectionPath: categoryCollectionName,
+        id: null,
+        filedName: null,
+        filedValue: null);
     //Listview Builder 등을 이용해서 뿌려주기
     setState(() {
       body = FutureBuilder(
@@ -43,6 +48,12 @@ class _CafeItemState extends State<CafeItem> {
                         onSelected: (value) async {
                           switch (value) {
                             case 'modify':
+                              var result = Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CafeCategoryAddForm(id: data.id),
+                                  ));
                               break;
                             case 'delete':
                               var result = await myCafe.delete(
@@ -51,7 +62,6 @@ class _CafeItemState extends State<CafeItem> {
                               if (result) {
                                 getCategory();
                               }
-
                               break;
                           }
                         },
@@ -97,7 +107,7 @@ class _CafeItemState extends State<CafeItem> {
           var result = await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const CafeCategoryAddForm(),
+                builder: (context) => CafeCategoryAddForm(id: null),
               ));
 
           //카테고리 목록을 출력
@@ -112,7 +122,8 @@ class _CafeItemState extends State<CafeItem> {
 }
 
 class CafeCategoryAddForm extends StatefulWidget {
-  const CafeCategoryAddForm({super.key});
+  String? id;
+  CafeCategoryAddForm({super.key, required this.id});
 
   @override
   State<CafeCategoryAddForm> createState() => _CafeCategoryAddFormState();
@@ -120,8 +131,30 @@ class CafeCategoryAddForm extends StatefulWidget {
 
 class _CafeCategoryAddFormState extends State<CafeCategoryAddForm> {
   TextEditingController controller = TextEditingController();
-
   var isUsed = true;
+  String? id;
+
+  Future<dynamic> getData({required String id}) async {
+    var data = await myCafe.get(
+        collectionPath: categoryCollectionName,
+        id: id,
+        filedName: null,
+        filedValue: null);
+
+    print(data['categoryName']);
+    return data;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    id = widget.id;
+    if (id != null) {
+      var data = getData(id: id!);
+      print(data);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

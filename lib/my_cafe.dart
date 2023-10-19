@@ -17,15 +17,28 @@ class MyCafe {
   }
 
 //JsonQuerySnapshot 형태는 json보다 더 많은 정보를 가지고 있는 형식이다
-  Future<QuerySnapshot<Map<String, dynamic>>?> get(
+  Future<dynamic> get(
       //? 를 붙여서 널일 수도 있다고 설정
-      {required String collectionPath}) async {
+      {required String collectionPath,
+      required String? id,
+      required String? filedName,
+      required String? filedValue}) async {
     try {
-      var result = db.collection(collectionPath).get();
-      return result;
+      if (id == null && filedName == null) {
+        return db.collection(collectionPath).get();
+      } else if (id != null) {
+        //고유 아이디로 찾아서 리턴
+        return db.collection(collectionPath).doc(id).get();
+      } else if (filedName != null) {
+        return db
+            .collection(collectionPath)
+            .where(filedName, isEqualTo: filedValue)
+            .get();
+      }
     } catch (e) {
       return null;
     }
+    return null;
   }
 
   Future<bool> delete(
