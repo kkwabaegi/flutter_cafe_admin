@@ -15,17 +15,66 @@ class CafeItem extends StatefulWidget {
 }
 
 class _CafeItemState extends State<CafeItem> {
+  dynamic body =
+      const Text('Loading...'); //로딩 - 즉 로드는 하드디스크의 정보를 메모리(렘)에 올리는 시간
+
+  //동기, 비동기 - 동기는 싱크로 / 비동기는 따로따로
+  Future<void> getCategory() async {
+    //비동기로 받아오기
+    var datas = myCafe.get(collectionPath: categoryCollectionName);
+    //Listview Builder 등을 이용해서 뿌려주기
+    setState(() {
+      body = FutureBuilder(
+        future: datas,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var datas = snapshot.data!.docs; //혹시 나 무조건 있다니까!
+            if (datas.isEmpty) {
+              return const Center(child: Text('empty'));
+            } else {
+              //진짜 데이터가 있을 때
+              //데이터가 리스트 형태이기 때문에 리스트뷰를 이용해서 하나씩 뿌려줌
+              return ListView.separated(
+                  itemBuilder: (context, index) {
+                    var data = datas[index];
+                    return ListTile(title: Text(data['categoryName']));
+                  },
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemCount: datas.length);
+            }
+          } else {
+            //아직 기다리는중
+            return const Center(child: Text('로딩중'));
+          }
+        },
+      );
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCategory();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Text('암ㄴㅇ'),
+      body: body,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          //result에 true가 보관(저장완료)
+          var result = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const CafeCategoryAddForm(),
               ));
+
+          //카테고리 목록을 출력
+          if (result == true) {
+            getCategory();
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -56,12 +105,12 @@ class _CafeCategoryAddFormState extends State<CafeCategoryAddForm> {
               onPressed: () async {
                 if (controller.text.isNotEmpty) {
                   var data = {
-                    'categoryname': controller.text,
+                    'categoryName': controller.text,
                     'isUsed': isUsed
                   };
                   if (await myCafe.insert(
                       collectionPath: categoryCollectionName, data: data)) {
-                    Navigator.pop(context);
+                    Navigator.pop(context, true);
                   }
                 }
               },
