@@ -37,7 +37,36 @@ class _CafeItemState extends State<CafeItem> {
               return ListView.separated(
                   itemBuilder: (context, index) {
                     var data = datas[index];
-                    return ListTile(title: Text(data['categoryName']));
+                    return ListTile(
+                      title: Text(data['categoryName']),
+                      trailing: PopupMenuButton(
+                        onSelected: (value) async {
+                          switch (value) {
+                            case 'modify':
+                              break;
+                            case 'delete':
+                              var result = await myCafe.delete(
+                                  collectionPath: categoryCollectionName,
+                                  id: data.id);
+                              if (result) {
+                                getCategory();
+                              }
+
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'modify',
+                            child: Text('수정'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('삭제'),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   separatorBuilder: (context, index) => const Divider(),
                   itemCount: datas.length);

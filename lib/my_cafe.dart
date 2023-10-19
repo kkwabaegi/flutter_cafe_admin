@@ -27,4 +27,14 @@ class MyCafe {
       return null;
     }
   }
+
+  Future<bool> delete(
+      {required String collectionPath, required String id}) async {
+    try {
+      var result = await db.collection(collectionPath).doc(id).delete();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
