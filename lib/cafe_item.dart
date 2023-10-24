@@ -22,11 +22,7 @@ class _CafeItemState extends State<CafeItem> {
   //동기, 비동기 - 동기는 싱크로 / 비동기는 따로따로
   Future<void> getCategory() async {
     //비동기로 받아오기
-    var datas = myCafe.get(
-        collectionPath: categoryCollectionName,
-        id: null,
-        filedName: null,
-        filedValue: null);
+    var datas = myCafe.get(collectionPath: categoryCollectionName);
     //Listview Builder 등을 이용해서 뿌려주기
     setState(() {
       body = FutureBuilder(
@@ -54,7 +50,7 @@ class _CafeItemState extends State<CafeItem> {
                                     builder: (context) =>
                                         CafeCategoryAddForm(id: data.id),
                                   ));
-                              if (result) {
+                              if (result == true) {
                                 getCategory();
                               }
                               break;
@@ -62,7 +58,7 @@ class _CafeItemState extends State<CafeItem> {
                               var result = await myCafe.delete(
                                   collectionPath: categoryCollectionName,
                                   id: data.id);
-                              if (result) {
+                              if (result == true) {
                                 getCategory();
                               }
                               break;
@@ -164,23 +160,20 @@ class _CafeCategoryAddFormState extends State<CafeCategoryAddForm> {
         actions: [
           TextButton(
               onPressed: () async {
-                var data = {'categoryName': controller.text, 'isUsed': isUsed};
-                if (id != null) {
-                  if (controller.text.isNotEmpty) {
-                    if (await myCafe.update(
-                        collectionPath: categoryCollectionName,
-                        data: data,
-                        id: id!)) {
-                      print('asdwd');
-                      Navigator.pop(context, true);
-                    }
-                  }
-                } else {
-                  if (controller.text.isNotEmpty) {
-                    if (await myCafe.insert(
-                        collectionPath: categoryCollectionName, data: data)) {
-                      Navigator.pop(context, true);
-                    }
+                if (controller.text.isNotEmpty) {
+                  var data = {
+                    'categoryName': controller.text,
+                    'isUsed': isUsed
+                  };
+                  var result = (id != null)
+                      ? await myCafe.update(
+                          collectionPath: categoryCollectionName,
+                          data: data,
+                          id: id!)
+                      : await myCafe.insert(
+                          collectionPath: categoryCollectionName, data: data);
+                  if (result) {
+                    Navigator.pop(context, true);
                   }
                 }
               },

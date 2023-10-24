@@ -21,20 +21,20 @@ class MyCafe {
       //? 를 붙여서 널일 수도 있다고 설정
       {required String collectionPath,
       String? id,
-      String? filedName,
-      String? filedValue}) async {
+      String? fieldName,
+      String? fieldValue}) async {
     try {
       //전체 찾기
-      if (id == null && filedName == null) {
-        return db.collection(collectionPath).get();
+      if (id == null && fieldName == null) {
+        return await db.collection(collectionPath).get();
       } else if (id != null) {
         //고유 아이디로 찾아서 리턴
-        return db.collection(collectionPath).doc(id).get();
+        return await db.collection(collectionPath).doc(id).get();
         //필드값을 가지고 찾기
-      } else if (filedName != null) {
-        return db
+      } else if (fieldName != null) {
+        return await db
             .collection(collectionPath)
-            .where(filedName, isEqualTo: filedValue)
+            .where(fieldName, isEqualTo: fieldValue)
             .get();
       }
     } catch (e) {
@@ -46,7 +46,7 @@ class MyCafe {
   Future<bool> delete(
       {required String collectionPath, required String id}) async {
     try {
-      var result = await db.collection(collectionPath).doc(id).delete();
+      await db.collection(collectionPath).doc(id).delete();
       return true;
     } catch (e) {
       return false;
@@ -58,7 +58,7 @@ class MyCafe {
       required Map<String, dynamic> data,
       required String id}) async {
     try {
-      var result = await db.collection(collectionPath).doc(id).update(data);
+      await db.collection(collectionPath).doc(id).update(data);
       return true;
     } catch (e) {
       return false;
