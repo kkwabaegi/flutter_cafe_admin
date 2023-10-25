@@ -30,6 +30,8 @@ class MyCafe {
       } else if (id != null) {
         //고유 아이디로 찾아서 리턴
         return await db.collection(collectionPath).doc(id).get();
+        //id가 같은지 검사하고 해보니 1개네?
+        //return await db.collection(collectionPath).where(FieldPath.documentId, isEqualTo: id).get();
         //필드값을 가지고 찾기
       } else if (fieldName != null) {
         return await db
