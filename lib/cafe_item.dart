@@ -319,7 +319,11 @@ class _CafeItemAddFormState extends State<CafeItemAddForm> {
   TextEditingController controllerTitle = TextEditingController();
   TextEditingController controllerPrice = TextEditingController();
   TextEditingController controllerDesc = TextEditingController();
+  TextEditingController controllerOptionName = TextEditingController();
+  TextEditingController controllerOptionValue = TextEditingController();
   bool isSoldOut = false;
+  dynamic option = const Text('옵션이없어용');
+  var options = [];
 
   @override
   void initState() {
@@ -379,7 +383,45 @@ class _CafeItemAddFormState extends State<CafeItemAddForm> {
             });
           },
           title: const Text('sold out?'),
-        )
+        ),
+        //옵션 추가하기
+        //옵션 이름 [1,2,3,4,5]
+        //option:{'size':'1,2,3,4,5'}
+        const Text('옵션'),
+        Expanded(child: option),
+        IconButton(
+            onPressed: () {
+              setState(() {
+                var optionName = controllerOptionName.text;
+                var optionValue = controllerOptionValue.text;
+                options.add(
+                    {'optionName': optionName, 'optionValue': optionValue});
+                option = ListView.separated(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(options[index]['optionName']),
+                      subtitle: Text(options[index]['optionValue']
+                          .toString()
+                          .replaceAll('\n', ' / ')),
+                      trailing: IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.close)),
+                    );
+                  },
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemCount: options.length,
+                );
+              });
+              controllerOptionName.clear();
+              controllerOptionValue.clear();
+            },
+            icon: const Icon(Icons.arrow_upward_outlined)),
+        TextField(
+          controller: controllerOptionName,
+        ),
+        TextField(
+          controller: controllerOptionValue,
+          maxLines: 10,
+        ),
       ]),
     );
   }
