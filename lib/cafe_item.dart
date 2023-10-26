@@ -325,6 +325,32 @@ class _CafeItemAddFormState extends State<CafeItemAddForm> {
   dynamic option = const Text('옵션이없어용');
   var options = [];
 
+  void showOptionList() {
+    setState(() {
+      option = ListView.separated(
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(options[index]['optionName']),
+            subtitle: Text(options[index]['optionValue']
+                .toString()
+                .replaceAll('\n', ' / ')),
+            trailing: IconButton(
+                onPressed: () {
+                  options.removeAt(index);
+                  showOptionList();
+                  print(options);
+                },
+                icon: const Icon(Icons.close)),
+          );
+        },
+        separatorBuilder: (context, index) => const Divider(),
+        itemCount: options.length,
+      );
+    });
+    controllerOptionName.clear();
+    controllerOptionValue.clear();
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -342,10 +368,12 @@ class _CafeItemAddFormState extends State<CafeItemAddForm> {
           TextButton(
               onPressed: () async {
                 var data = {
+                  'categoryId': categoryid,
                   'itemName': controllerTitle.text,
                   'itemPrice': int.parse(controllerPrice.text),
                   'itemDesc': controllerDesc.text,
-                  'itemIsSoldOut': isSoldOut
+                  'itemIsSoldOut': isSoldOut,
+                  'options': options
                 };
                 var result = await myCafe.insert(
                     collectionPath: itemCollectionName, data: data);
@@ -368,6 +396,7 @@ class _CafeItemAddFormState extends State<CafeItemAddForm> {
             label: Text('가격'),
           ),
           controller: controllerPrice,
+          keyboardType: TextInputType.number,
         ),
         TextFormField(
           decoration: const InputDecoration(
@@ -391,28 +420,14 @@ class _CafeItemAddFormState extends State<CafeItemAddForm> {
         Expanded(child: option),
         IconButton(
             onPressed: () {
-              setState(() {
-                var optionName = controllerOptionName.text;
-                var optionValue = controllerOptionValue.text;
-                options.add(
-                    {'optionName': optionName, 'optionValue': optionValue});
-                option = ListView.separated(
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(options[index]['optionName']),
-                      subtitle: Text(options[index]['optionValue']
-                          .toString()
-                          .replaceAll('\n', ' / ')),
-                      trailing: IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.close)),
-                    );
-                  },
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemCount: options.length,
-                );
-              });
-              controllerOptionName.clear();
-              controllerOptionValue.clear();
+              if (controllerOptionName.text != '' &&
+                  controllerOptionValue.text != '') {
+                options.add({
+                  'optionName': controllerOptionName.text,
+                  'optionValue': controllerOptionValue.text
+                });
+              }
+              showOptionList();
             },
             icon: const Icon(Icons.arrow_upward_outlined)),
         TextField(
