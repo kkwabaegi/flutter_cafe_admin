@@ -19,10 +19,12 @@ class MyCafe {
 //JsonQuerySnapshot 형태는 json보다 더 많은 정보를 가지고 있는 형식이다
   Future<dynamic> get(
       //? 를 붙여서 널일 수도 있다고 설정
-      {required String collectionPath,
-      String? id,
-      String? fieldName,
-      String? fieldValue}) async {
+      {
+    required String collectionPath,
+    String? id,
+    String? fieldName,
+    String? fieldValue,
+  }) async {
     try {
       //전체 찾기
       if (id == null && fieldName == null) {
